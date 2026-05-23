@@ -44,3 +44,12 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 * **Corrección de Race Condition Visual:** Resolví un problema de renderizado donde la pantalla de "SISTEMA CORRUPTO" y la tabla de puntajes parpadeaban (superposición de frames). Modifiqué el Game Loop para almacenar el ID del `requestAnimationFrame` y utilizar `cancelAnimationFrame()` en el momento exacto del impacto.
 * **Optimización de memoria:** Al cortar el ciclo de renderizado nativo, evito que el Canvas siga consumiendo recursos pintando el fondo mientras el jugador revisa la tabla de clasificaciones.
 * **UX/UI Básica:** Agregué un indicador visual simple para indicarle al jugador cómo reiniciar el estado de la aplicación luego de perder.
+
+---
+
+### Estado Actual: `Fase 4 - Identidad y Game Loop Autónomo`
+
+## 🕹️ Funcionalidades añadidas
+* **Gestión de Sesión Simple:** Implementé un sistema de captura de alias mediante la Web API. Para evitar fricción en la experiencia, el alias ingresado se persiste en el `localStorage` del navegador, manteniéndolo activo entre sesiones.
+* **Payload Dinámico:** Eliminé los datos hardcodeados en las peticiones HTTP. Ahora el `POST` al backend incluye la variable de estado dinámica del jugador.
+* **Soft Reset (Reinicio en caliente):** Escribí una función de limpieza de estado (`softReset`) atada a un EventListener de la tecla `Enter`. Esto permite reiniciar las variables del entorno físico y reanudar el `requestAnimationFrame` sin necesidad de forzar una recarga del DOM (F5), mejorando drásticamente el ritmo de juego.
