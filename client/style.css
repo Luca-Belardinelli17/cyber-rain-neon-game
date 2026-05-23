@@ -1,0 +1,29 @@
+body {
+    background-color: #050508;
+    color: #00f3ff;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+}
+
+#game-container {
+    text-align: center;
+}
+
+#score-label {
+    font-size: 18px;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+    font-weight: bold;
+    text-shadow: 0 0 8px #00f3ff;
+}
+
+canvas {
+    border: 2px solid #00f3ff;
+    background-color: #0a0a12;
+    box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
+}
