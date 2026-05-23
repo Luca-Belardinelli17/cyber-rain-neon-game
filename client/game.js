@@ -3,6 +3,7 @@ const ctx = canvas.getContext('2d');
 
 let scoreData = 0; 
 let systemFailure = false; 
+let gameOverProcessed = false; // Nueva bandera para evitar spam a la API
 
 const runner = {
     x: canvas.width / 2 - 20,
@@ -57,6 +58,41 @@ function drawRunner() {
     ctx.shadowBlur = 0; 
 }
 
+// --- NUEVA FUNCIÓN: Comunicación con la API ---
+async function processGameOver() {
+    try {
+        const response = await fetch('http://localhost:3000/api/scores', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: "LUC", score: Math.floor(scoreData) }) // Nombre estático temporal
+        });
+        
+        const result = await response.json();
+        displayLeaderboard(result.data);
+    } catch (error) {
+        console.error("Error de conexión con la Red:", error);
+    }
+}
+
+// --- NUEVA FUNCIÓN: Dibujo de la tabla de posiciones ---
+function displayLeaderboard(scores) {
+    ctx.fillStyle = 'rgba(10, 10, 18, 0.95)';
+    ctx.fillRect(40, 60, canvas.width - 80, canvas.height - 120);
+    
+    ctx.fillStyle = '#00f3ff';
+    ctx.font = 'bold 22px "Courier New"';
+    ctx.textAlign = 'center';
+    ctx.fillText('--- TOP RUNNERS ---', canvas.width / 2, 100);
+    
+    ctx.font = '18px "Courier New"';
+    ctx.textAlign = 'left';
+    scores.forEach((entry, index) => {
+        const yPos = 150 + (index * 40);
+        ctx.fillText(`${index + 1}. ${entry.username}`, 70, yPos);
+        ctx.fillText(`${entry.score} TB`, 240, yPos);
+    });
+}
+
 function update() {
     if (!systemFailure) {
         if (keys.ArrowLeft && runner.x > 0) runner.x -= runner.speed;
@@ -89,6 +125,7 @@ function update() {
 
     document.getElementById('score-label').innerText = `DATOS RECOLECTADOS: ${Math.floor(scoreData)} TB`;
 
+    // --- MODIFICACIÓN: Disparador del Game Over ---
     if (systemFailure) {
         ctx.fillStyle = 'rgba(10, 10, 18, 0.85)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -97,7 +134,15 @@ function update() {
         ctx.font = '30px "Courier New"';
         ctx.textAlign = 'center';
         ctx.fillText('SISTEMA CORRUPTO', canvas.width / 2, canvas.height / 2);
-        return; 
+        
+        // Llamar a la API solo una vez, pero dejamos que el update() siga corriendo (Error intencional)
+        if (!gameOverProcessed) {
+            gameOverProcessed = true;
+            processGameOver();
+        }
+        // Nota: Al quitar el 'return;' intencionalmente, generamos la carrera de renderizado 
+        // donde la tabla y el cartel rojo pelean por pintarse en el canvas. 
+        // Esto lo arreglaremos en el Commit 3 con una estructura más limpia.
     }
 
     requestAnimationFrame(update);

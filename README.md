@@ -26,3 +26,13 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 2. Instala las dependencias necesarias de Node.js ejecutando:
    ```bash
    npm install
+
+---
+
+### Estado Actual: 'Fase 2 - Integración de API Backend'
+
+## ⚙️ Procesos Técnicos Implementados en la Fase 2
+1. **Peticiones HTTP Asíncronas:** Uso de la API `fetch` nativa del navegador bajo un modelo `async/await` para gestionar la comunicación no bloqueante con el servidor.
+2. **Sincronización Cliente-Servidor:** Al detectarse un fallo del sistema (Game Over), el cliente empaqueta la puntuación (`scoreData`) en un payload JSON y lo transmite al endpoint `POST /api/scores`.
+3. **Renderizado de Datos Dinámicos:** El cliente interpreta la respuesta del servidor y sobreescribe de forma dinámica los pixeles del Canvas para desplegar la tabla de clasificación interactiva (`Leaderboard`).
+*(Nota técnica: En esta versión inicial existe un comportamiento inestable de renderizado (Race Condition) debido a la superposición del bucle de animación con los datos asíncronos recibidos, lo cual se abordará en la siguiente fase).*
