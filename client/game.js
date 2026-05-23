@@ -4,6 +4,7 @@ const ctx = canvas.getContext('2d');
 let scoreData = 0; 
 let systemFailure = false; 
 let gameOverProcessed = false; // Nueva bandera para evitar spam a la API
+let animationId; // --- NUEVO: Control de la animación para frenar el loop ---
 
 const runner = {
     x: canvas.width / 2 - 20,
@@ -91,6 +92,11 @@ function displayLeaderboard(scores) {
         ctx.fillText(`${index + 1}. ${entry.username}`, 70, yPos);
         ctx.fillText(`${entry.score} TB`, 240, yPos);
     });
+
+    // --- NUEVO: Indicador para recargar ---
+    ctx.fillStyle = '#ee00ff';
+    ctx.textAlign = 'center';
+    ctx.fillText('F5 PARA REINICIAR', canvas.width / 2, canvas.height - 80);
 }
 
 function update() {
@@ -109,7 +115,7 @@ function update() {
             if (h.y > canvas.height) { hazards.splice(i, 1); i--; }
         }
         
-        if (!systemFailure) scoreData += 0.05;
+        scoreData += 0.05;
     }
 
     ctx.fillStyle = 'rgba(5, 5, 8, 0.3)'; 
@@ -125,8 +131,11 @@ function update() {
 
     document.getElementById('score-label').innerText = `DATOS RECOLECTADOS: ${Math.floor(scoreData)} TB`;
 
-    // --- MODIFICACIÓN: Disparador del Game Over ---
+    // --- MODIFICACIÓN: Disparador del Game Over refactorizado ---
     if (systemFailure) {
+        // Cancelamos el próximo frame para detener el renderizado continuo y evitar el parpadeo
+        cancelAnimationFrame(animationId);
+
         ctx.fillStyle = 'rgba(10, 10, 18, 0.85)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -135,17 +144,17 @@ function update() {
         ctx.textAlign = 'center';
         ctx.fillText('SISTEMA CORRUPTO', canvas.width / 2, canvas.height / 2);
         
-        // Llamar a la API solo una vez, pero dejamos que el update() siga corriendo (Error intencional)
+        // Llamar a la API solo una vez de forma segura
         if (!gameOverProcessed) {
             gameOverProcessed = true;
             processGameOver();
         }
-        // Nota: Al quitar el 'return;' intencionalmente, generamos la carrera de renderizado 
-        // donde la tabla y el cartel rojo pelean por pintarse en el canvas. 
-        // Esto lo arreglaremos en el Commit 3 con una estructura más limpia.
+        return; // Salimos de la función para cortar definitivamente el ciclo
     }
 
-    requestAnimationFrame(update);
+    // Guardamos el ID del frame para poder cancelarlo cuando el jugador pierda
+    animationId = requestAnimationFrame(update);
 }
 
-requestAnimationFrame(update);
+// Iniciar el ciclo guardando su referencia
+animationId = requestAnimationFrame(update);
