@@ -53,3 +53,11 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 * **Gestión de Sesión Simple:** Implementé un sistema de captura de alias mediante la Web API. Para evitar fricción en la experiencia, el alias ingresado se persiste en el `localStorage` del navegador, manteniéndolo activo entre sesiones.
 * **Payload Dinámico:** Eliminé los datos hardcodeados en las peticiones HTTP. Ahora el `POST` al backend incluye la variable de estado dinámica del jugador.
 * **Soft Reset (Reinicio en caliente):** Escribí una función de limpieza de estado (`softReset`) atada a un EventListener de la tecla `Enter`. Esto permite reiniciar las variables del entorno físico y reanudar el `requestAnimationFrame` sin necesidad de forzar una recarga del DOM (F5), mejorando drásticamente el ritmo de juego.
+
+---
+
+### Estado Actual: `Fase 5 - Balanceo y Escalado de Dificultad`
+
+## ⚖️ Ajustes de Game Design
+* **Dificultad Progresiva (Progressive Scaling):** Modifiqué el algoritmo de generación de obstáculos (`hazards`). Ahora, la velocidad terminal de caída incluye un multiplicador basado en la variable `scoreData`. A medida que el operador recolecta más datos, el "sistema" reacciona enviando contramedidas más rápidas.
+* **Refactorización del Loop de Spawns:** Sustituí el intervalo estático por un sistema de `clearInterval` dinámico. Al cruzar los umbrales de 50 TB y 150 TB, la tasa de regeneración (spawn rate) de los obstáculos se reduce de 800ms a 600ms y 400ms respectivamente, aumentando la densidad de la lluvia de neón en pantalla.

@@ -1,16 +1,16 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// --- NUEVO: Identidad del jugador ---
-// Pedimos el alias al iniciar y lo guardamos en localStorage para no molestar en cada reinicio
+// Identidad del jugador
 let playerName = localStorage.getItem('cyber_operator') || prompt("Ingresar Alias de Operador (Max 5 letras):", "ANON") || "ANON";
 playerName = playerName.substring(0, 5).toUpperCase();
 localStorage.setItem('cyber_operator', playerName);
 
 let scoreData = 0; 
 let systemFailure = false; 
-let gameOverProcessed = false; // Nueva bandera para evitar spam a la API
-let animationId; // Control de la animación para frenar el loop
+let gameOverProcessed = false; 
+let animationId; 
+let hazardInterval; // --- NUEVO: Control dinámico del intervalo de aparición ---
 
 const runner = {
     x: canvas.width / 2 - 20,
@@ -30,7 +30,6 @@ window.addEventListener('keydown', (e) => {
     if (e.code === 'ArrowLeft' || e.code === 'ArrowRight'){
         keys[e.code] = true;
     }
-    // --- NUEVO: Escuchar el Enter para reiniciar en caliente ---
     if (e.code === 'Enter' && systemFailure) {
         softReset();
     }
@@ -44,6 +43,7 @@ window.addEventListener('keyup', (e) => {
 
 let hazards = []; 
 let baseHazardSpeed = 3; 
+let currentSpawnRate = 800; // --- NUEVO: Frecuencia de aparición inicial (ms) ---
 
 function spawnHazard() {
     if (systemFailure) return; 
@@ -54,12 +54,14 @@ function spawnHazard() {
         y: -30, 
         width: w, 
         height: w, 
-        speed: baseHazardSpeed + Math.random() * 2, 
+        // --- MODIFICACIÓN: La velocidad ahora depende del score actual ---
+        speed: baseHazardSpeed + Math.random() * 2 + (scoreData * 0.015), 
         color: '#ee00ff' 
     });
 }
 
-setInterval(spawnHazard, 800);
+// Iniciar el generador de obstáculos
+hazardInterval = setInterval(spawnHazard, currentSpawnRate);
 
 function drawRunner() {
     ctx.shadowBlur = 10;
@@ -69,8 +71,6 @@ function drawRunner() {
     ctx.shadowBlur = 0; 
 }
 
-// --- NUEVA FUNCIÓN: Reinicio en caliente (Soft Reset) ---
-// Evita tener que recargar la pestaña del navegador para volver a jugar
 function softReset() {
     scoreData = 0;
     systemFailure = false;
@@ -78,11 +78,14 @@ function softReset() {
     hazards = [];
     runner.x = canvas.width / 2 - 20;
     
-    // Volvemos a arrancar el motor de renderizado
+    // Reiniciar la dificultad
+    clearInterval(hazardInterval);
+    currentSpawnRate = 800;
+    hazardInterval = setInterval(spawnHazard, currentSpawnRate);
+    
     animationId = requestAnimationFrame(update);
 }
 
-// --- MODIFICACIÓN: Comunicación con la API usando el alias dinámico ---
 async function processGameOver() {
     try {
         const response = await fetch('http://localhost:3000/api/scores', {
@@ -98,7 +101,6 @@ async function processGameOver() {
     }
 }
 
-// --- MODIFICACIÓN: Dibujo de la tabla de posiciones ---
 function displayLeaderboard(scores) {
     ctx.fillStyle = 'rgba(10, 10, 18, 0.95)';
     ctx.fillRect(40, 60, canvas.width - 80, canvas.height - 120);
@@ -116,7 +118,6 @@ function displayLeaderboard(scores) {
         ctx.fillText(`${entry.score} TB`, 240, yPos);
     });
 
-    // --- MODIFICACIÓN: Instrucción actualizada ---
     ctx.fillStyle = '#ee00ff';
     ctx.textAlign = 'center';
     ctx.fillText('ENTER PARA REINICIAR', canvas.width / 2, canvas.height - 80);
@@ -139,6 +140,18 @@ function update() {
         }
         
         scoreData += 0.05;
+
+        // --- NUEVO: Escalado dinámico de dificultad ---
+        // Si superamos ciertos umbrales de datos, los obstáculos aparecen más rápido
+        if (scoreData > 50 && currentSpawnRate > 600) {
+            currentSpawnRate = 600;
+            clearInterval(hazardInterval);
+            hazardInterval = setInterval(spawnHazard, currentSpawnRate);
+        } else if (scoreData > 150 && currentSpawnRate > 400) {
+            currentSpawnRate = 400;
+            clearInterval(hazardInterval);
+            hazardInterval = setInterval(spawnHazard, currentSpawnRate);
+        }
     }
 
     ctx.fillStyle = 'rgba(5, 5, 8, 0.3)'; 
@@ -152,10 +165,8 @@ function update() {
         ctx.fillRect(h.x, h.y, h.width, h.height);
     }
 
-    // Muestra el nombre del jugador junto al score
     document.getElementById('score-label').innerText = `OP: [${playerName}] | DATOS: ${Math.floor(scoreData)} TB`;
 
-    // Disparador del Game Over refactorizado
     if (systemFailure) {
         cancelAnimationFrame(animationId);
 
@@ -167,7 +178,6 @@ function update() {
         ctx.textAlign = 'center';
         ctx.fillText('SISTEMA CORRUPTO', canvas.width / 2, canvas.height / 2);
         
-        // Llamar a la API solo una vez de forma segura
         if (!gameOverProcessed) {
             gameOverProcessed = true;
             processGameOver();
