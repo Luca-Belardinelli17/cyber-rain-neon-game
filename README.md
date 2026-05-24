@@ -61,3 +61,13 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 ## ⚖️ Ajustes de Game Design
 * **Dificultad Progresiva (Progressive Scaling):** Modifiqué el algoritmo de generación de obstáculos (`hazards`). Ahora, la velocidad terminal de caída incluye un multiplicador basado en la variable `scoreData`. A medida que el operador recolecta más datos, el "sistema" reacciona enviando contramedidas más rápidas.
 * **Refactorización del Loop de Spawns:** Sustituí el intervalo estático por un sistema de `clearInterval` dinámico. Al cruzar los umbrales de 50 TB y 150 TB, la tasa de regeneración (spawn rate) de los obstáculos se reduce de 800ms a 600ms y 400ms respectivamente, aumentando la densidad de la lluvia de neón en pantalla.
+
+---
+
+### Estado Actual: `Fase 6 - Integración de UI y Main Menu`
+
+## 🖥️ Interfaz de Usuario e Interacciones
+* **Reemplazo de Web APIs Nativas:** Removí la dependencia de la función bloqueante `prompt()` del navegador, la cual presentaba una mala experiencia de usuario.
+* **Diseño de Interfaz (GUI):** Implementé un overlay en HTML/CSS estilizado según la temática "Cyberpunk" del proyecto.
+* **Validación de Entradas:** Agregué lógica en el cliente para sanitizar el input del usuario (máximo 5 caracteres, forzado estricto a mayúsculas tanto visualmente mediante CSS `text-transform` como a nivel lógico con `.toUpperCase()`), asegurando la integridad de los datos antes de persistirlos en `localStorage` y enviarlos a la base de datos.
+* **Control de Flujo del Game Loop:** Modifiqué el ciclo de vida del motor de renderizado. Ahora los procesos asíncronos (`setInterval`) y el pintado en pantalla (`requestAnimationFrame`) se encuentran encapsulados y pausados por defecto, inicializándose únicamente tras la confirmación de identidad del jugador.

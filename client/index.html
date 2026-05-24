@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neon Runner - Mainframe Client</title>
+    <title>Cyber Rain</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="game-container">
-        <div id="score-label">DATOS RECOLECTADOS: 0 TB</div>
+        <div id="score-label">OP: [] | DATOS: 0 TB</div>
+        
         <canvas id="gameCanvas" width="400" height="500"></canvas>
+        
+        <div id="start-screen">
+            <h2>INICIALIZANDO SISTEMA</h2>
+            <p>IDENTIFICACIÓN DE OPERADOR REQUERIDA</p>
+            
+            <input type="text" id="player-name" maxlength="5" placeholder="ALIAS" style="text-transform: uppercase;" autocomplete="off">
+            
+            <button id="start-btn">CONECTAR</button>
+        </div>
     </div>
+
     <script src="game.js"></script>
 </body>
 </html>

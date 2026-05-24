@@ -1,16 +1,41 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Identidad del jugador
-let playerName = localStorage.getItem('cyber_operator') || prompt("Ingresar Alias de Operador (Max 5 letras):", "ANON") || "ANON";
-playerName = playerName.substring(0, 5).toUpperCase();
-localStorage.setItem('cyber_operator', playerName);
-
+// Variables de estado del juego
+let playerName = localStorage.getItem('cyber_operator') || ""; 
 let scoreData = 0; 
 let systemFailure = false; 
 let gameOverProcessed = false; 
 let animationId; 
-let hazardInterval; // --- NUEVO: Control dinámico del intervalo de aparición ---
+let hazardInterval; 
+let currentSpawnRate = 800; 
+
+// Elementos del DOM para la interfaz
+const startScreen = document.getElementById('start-screen');
+const nameInput = document.getElementById('player-name');
+const startBtn = document.getElementById('start-btn');
+
+// Pre-completar el cuadro de texto si el usuario ya ingresó un alias anteriormente
+if (playerName && playerName !== "ANON") {
+    nameInput.value = playerName;
+}
+
+// Control de la pantalla de inicio y arranque diferido
+startBtn.addEventListener('click', () => {
+    let val = nameInput.value.trim();
+    if (!val) val = "ANON";
+    
+    // Forzar mayúsculas en la lógica y asegurar el límite de 5 caracteres
+    playerName = val.substring(0, 5).toUpperCase();
+    localStorage.setItem('cyber_operator', playerName);
+    
+    // Ocultar la interfaz del menú
+    startScreen.style.display = 'none';
+    
+    // Inicializar los motores del juego tras la acción del usuario
+    hazardInterval = setInterval(spawnHazard, currentSpawnRate);
+    animationId = requestAnimationFrame(update);
+});
 
 const runner = {
     x: canvas.width / 2 - 20,
@@ -18,6 +43,7 @@ const runner = {
     width: 40,
     height: 15,
     speed: 6,
+    // Color Cian Neón original
     color: '#00f3ff' 
 };
 
@@ -43,7 +69,6 @@ window.addEventListener('keyup', (e) => {
 
 let hazards = []; 
 let baseHazardSpeed = 3; 
-let currentSpawnRate = 800; // --- NUEVO: Frecuencia de aparición inicial (ms) ---
 
 function spawnHazard() {
     if (systemFailure) return; 
@@ -54,14 +79,10 @@ function spawnHazard() {
         y: -30, 
         width: w, 
         height: w, 
-        // --- MODIFICACIÓN: La velocidad ahora depende del score actual ---
         speed: baseHazardSpeed + Math.random() * 2 + (scoreData * 0.015), 
         color: '#ee00ff' 
     });
 }
-
-// Iniciar el generador de obstáculos
-hazardInterval = setInterval(spawnHazard, currentSpawnRate);
 
 function drawRunner() {
     ctx.shadowBlur = 10;
@@ -78,7 +99,6 @@ function softReset() {
     hazards = [];
     runner.x = canvas.width / 2 - 20;
     
-    // Reiniciar la dificultad
     clearInterval(hazardInterval);
     currentSpawnRate = 800;
     hazardInterval = setInterval(spawnHazard, currentSpawnRate);
@@ -95,7 +115,16 @@ async function processGameOver() {
         });
         
         const result = await response.json();
-        displayLeaderboard(result.data);
+        
+        // --- CORRECCIÓN: Introducir delay dramático para el Game Over ---
+        // Esperamos 1.8 segundos antes de mostrar la tabla, permitiendo leer el cartel de error.
+        setTimeout(() => {
+            // Solo dibujamos la tabla si el juego sigue en estado de fallo (evita bugs si reinician rápido)
+            if (systemFailure) {
+                displayLeaderboard(result.data);
+            }
+        }, 1800);
+
     } catch (error) {
         console.error("Error de conexión con la Red:", error);
     }
@@ -141,8 +170,6 @@ function update() {
         
         scoreData += 0.05;
 
-        // --- NUEVO: Escalado dinámico de dificultad ---
-        // Si superamos ciertos umbrales de datos, los obstáculos aparecen más rápido
         if (scoreData > 50 && currentSpawnRate > 600) {
             currentSpawnRate = 600;
             clearInterval(hazardInterval);
@@ -187,5 +214,4 @@ function update() {
 
     animationId = requestAnimationFrame(update);
 }
-
-animationId = requestAnimationFrame(update);
+// Nota: Se removió la ejecución automática del final. El ciclo inicia al presionar "CONECTAR".

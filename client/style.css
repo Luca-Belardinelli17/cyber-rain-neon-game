@@ -1,7 +1,7 @@
 body {
     background-color: #050508;
-    color: #00f3ff;
-    font-family: 'Courier New', monospace;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -11,19 +11,86 @@ body {
 }
 
 #game-container {
-    text-align: center;
+    position: relative;
 }
 
 #score-label {
-    font-size: 18px;
-    margin-bottom: 15px;
-    letter-spacing: 2px;
-    font-weight: bold;
-    text-shadow: 0 0 8px #00f3ff;
+    color: #00f3ff;
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: center;
+    letter-spacing: 1px;
 }
 
 canvas {
+    /* --- CORRECCIÓN: Borde ahora coincide con el color del jugador (#00f3ff) --- */
     border: 2px solid #00f3ff;
     background-color: #0a0a12;
-    box-shadow: 0 0 25px rgba(0, 243, 255, 0.2);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    display: block;
+}
+
+/* --- UI PANTALLA DE INICIO --- */
+#start-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(10, 10, 18, 0.95);
+    border: 2px solid #00f3ff;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 280px;
+    box-sizing: border-box;
+}
+
+#start-screen h2 {
+    color: #ee00ff;
+    margin: 0;
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+#start-screen p {
+    color: #00f3ff;
+    margin: 0;
+    font-size: 12px;
+}
+
+#player-name {
+    background-color: transparent;
+    border: 1px solid #ee00ff;
+    color: #fff;
+    padding: 10px;
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    text-align: center;
+    outline: none;
+}
+
+#player-name:focus {
+    box-shadow: 0 0 10px rgba(238, 0, 255, 0.5);
+}
+
+#start-btn {
+    background-color: #00f3ff;
+    color: #000;
+    border: none;
+    padding: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Courier New', Courier, monospace;
+    transition: 0.2s;
+}
+
+#start-btn:hover {
+    background-color: #ee00ff;
+    color: #fff;
+    box-shadow: 0 0 15px #ee00ff;
 }
