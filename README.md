@@ -71,3 +71,11 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 * **Diseño de Interfaz (GUI):** Implementé un overlay en HTML/CSS estilizado según la temática "Cyberpunk" del proyecto.
 * **Validación de Entradas:** Agregué lógica en el cliente para sanitizar el input del usuario (máximo 5 caracteres, forzado estricto a mayúsculas tanto visualmente mediante CSS `text-transform` como a nivel lógico con `.toUpperCase()`), asegurando la integridad de los datos antes de persistirlos en `localStorage` y enviarlos a la base de datos.
 * **Control de Flujo del Game Loop:** Modifiqué el ciclo de vida del motor de renderizado. Ahora los procesos asíncronos (`setInterval`) y el pintado en pantalla (`requestAnimationFrame`) se encuentran encapsulados y pausados por defecto, inicializándose únicamente tras la confirmación de identidad del jugador.
+
+---
+
+### Estado Actual: `Fase 8 - Game Feel & Polish`
+
+## 🎨 Ajustes Sensoriales y Usabilidad
+* **Manejo de Eventos por Defecto:** Incorporé el método `e.preventDefault()` en el listener de teclado. Esto neutraliza las acciones nativas del navegador (como el scrolling con las flechas o la barra espaciadora), garantizando que el input quede aislado para uso exclusivo del canvas.
+* **Feedback Visual de Impacto:** Modifiqué el estado de renderizado del `runner` para que permute su paleta de colores al rojo (`#ff0055`) al detectar una colisión. A nivel de DOM, diseñé una clase CSS con la directiva `@keyframes` para inyectar una animación de traslación (`translate3d`) que genera un efecto de "Screen Shake" en el contenedor HTML al dispararse el Game Over.

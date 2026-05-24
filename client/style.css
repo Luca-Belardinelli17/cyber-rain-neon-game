@@ -23,7 +23,6 @@ body {
 }
 
 canvas {
-    /* --- CORRECCIÓN: Borde ahora coincide con el color del jugador (#00f3ff) --- */
     border: 2px solid #00f3ff;
     background-color: #0a0a12;
     box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
@@ -93,4 +92,16 @@ canvas {
     background-color: #ee00ff;
     color: #fff;
     box-shadow: 0 0 15px #ee00ff;
+}
+
+/* --- NUEVO: EFECTO DE TEMBLOR (SCREEN SHAKE) --- */
+.shake {
+    animation: shake-animation 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+@keyframes shake-animation {
+    10%, 90% { transform: translate3d(-3px, 0, 0); }
+    20%, 80% { transform: translate3d(5px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
+    40%, 60% { transform: translate3d(8px, 0, 0); }
 }

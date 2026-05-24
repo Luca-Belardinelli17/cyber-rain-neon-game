@@ -25,14 +25,11 @@ startBtn.addEventListener('click', () => {
     let val = nameInput.value.trim();
     if (!val) val = "ANON";
     
-    // Forzar mayúsculas en la lógica y asegurar el límite de 5 caracteres
     playerName = val.substring(0, 5).toUpperCase();
     localStorage.setItem('cyber_operator', playerName);
     
-    // Ocultar la interfaz del menú
     startScreen.style.display = 'none';
     
-    // Inicializar los motores del juego tras la acción del usuario
     hazardInterval = setInterval(spawnHazard, currentSpawnRate);
     animationId = requestAnimationFrame(update);
 });
@@ -43,7 +40,6 @@ const runner = {
     width: 40,
     height: 15,
     speed: 6,
-    // Color Cian Neón original
     color: '#00f3ff' 
 };
 
@@ -52,11 +48,20 @@ const keys = {
     ArrowRight: false
 };
 
+// --- MODIFICACIÓN: Prevenir comportamientos por defecto del navegador ---
 window.addEventListener('keydown', (e) => {
+    // Evitar scrolleo con flechas o barra espaciadora
+    if (['ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+        e.preventDefault();
+    }
+    
     if (e.code === 'ArrowLeft' || e.code === 'ArrowRight'){
         keys[e.code] = true;
     }
+    
+    // Evitar que el Enter dispare clics accidentales en otros botones de la web
     if (e.code === 'Enter' && systemFailure) {
+        e.preventDefault();
         softReset();
     }
 });
@@ -99,6 +104,10 @@ function softReset() {
     hazards = [];
     runner.x = canvas.width / 2 - 20;
     
+    // --- NUEVO: Restaurar visuales al reiniciar ---
+    runner.color = '#00f3ff';
+    canvas.classList.remove('shake');
+    
     clearInterval(hazardInterval);
     currentSpawnRate = 800;
     hazardInterval = setInterval(spawnHazard, currentSpawnRate);
@@ -116,10 +125,7 @@ async function processGameOver() {
         
         const result = await response.json();
         
-        // --- CORRECCIÓN: Introducir delay dramático para el Game Over ---
-        // Esperamos 1.8 segundos antes de mostrar la tabla, permitiendo leer el cartel de error.
         setTimeout(() => {
-            // Solo dibujamos la tabla si el juego sigue en estado de fallo (evita bugs si reinician rápido)
             if (systemFailure) {
                 displayLeaderboard(result.data);
             }
@@ -163,7 +169,11 @@ function update() {
 
             if (runner.x < h.x + h.width && runner.x + runner.width > h.x && 
                 runner.y < h.y + h.height && runner.y + runner.height > h.y) {
+                
+                // --- NUEVO: Feedback visual de impacto ---
                 systemFailure = true;
+                runner.color = '#ff0055'; // Cambia el bloque a rojo alerta
+                canvas.classList.add('shake'); // Ejecuta la animación CSS en el canvas
             }
             if (h.y > canvas.height) { hazards.splice(i, 1); i--; }
         }
@@ -200,7 +210,7 @@ function update() {
         ctx.fillStyle = 'rgba(10, 10, 18, 0.85)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        ctx.fillStyle = '#ee00ff';
+        ctx.fillStyle = '#ff0055'; // Cartel rojo para sumar al feedback
         ctx.font = '30px "Courier New"';
         ctx.textAlign = 'center';
         ctx.fillText('SISTEMA CORRUPTO', canvas.width / 2, canvas.height / 2);
@@ -214,4 +224,3 @@ function update() {
 
     animationId = requestAnimationFrame(update);
 }
-// Nota: Se removió la ejecución automática del final. El ciclo inicia al presionar "CONECTAR".
