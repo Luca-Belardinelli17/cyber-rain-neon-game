@@ -1,6 +1,6 @@
 # Neon Runner - Arcade Game 🕹️
 
-### Estado Actual: 'Fase 1 - Arquitectura de Red y Loop del Videojuego'
+### Estado Actual: `Fase 1 - Arquitectura de Red y Loop del Videojuego`
 
 ## 🌌 Temática y Concepto
 El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpunk y visuales basados en terminales clásicas. El jugador controla un nodo de datos (`Runner`) de color cian neón que se desplaza horizontalmente por una red informática. El objetivo es absorber la mayor cantidad de información posible (`Terabytes`) mientras se evitan los sectores de código malicioso o bloques corruptos de color magenta que caen de forma continua.
@@ -29,7 +29,7 @@ El proyecto ambienta un videojuego de estilo arcade retro con estética ciberpun
 
 ---
 
-### Estado Actual: 'Fase 2 - Integración de API Backend'
+### Estado Actual: `Fase 2 - Integración de API Backend`
 
 ## ⚙️ Procesos Técnicos Implementados en la Fase 2
 1. **Peticiones HTTP Asíncronas:** Uso de la API `fetch` nativa del navegador bajo un modelo `async/await` para gestionar la comunicación no bloqueante con el servidor.

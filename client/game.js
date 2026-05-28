@@ -117,7 +117,7 @@ function softReset() {
 
 async function processGameOver() {
     try {
-        const response = await fetch('http://localhost:3000/api/scores', {
+        const response = await fetch('https://cyber-rain-api.onrender.com/api/scores', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: playerName, score: Math.floor(scoreData) }) 
